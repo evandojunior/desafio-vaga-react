@@ -19,6 +19,7 @@ import { makeServer } from '@/src/services/mock/server';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import '@/global.css';
 import { useAuthStore } from '@/src/store/useAuthStore';
+import { useAppStore } from '@/src/store';
 
 export default function RootLayout() {
   const [mirageReady, setMirageReady] = useState(false);
@@ -26,6 +27,7 @@ export default function RootLayout() {
   const router = useRouter();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const hasAuthHydrated = useAuthStore.persist.hasHydrated();
+  const fetchCategories = useAppStore((state) => state.fetchCategories);
 
   useEffect(() => {
     async function init() {
@@ -39,13 +41,15 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (!mirageReady || !hasAuthHydrated) return;
-
-    const inAuthGroup = segments[0] === '(auth)';
+    const inAuthGroup = (segments[0] as string) === '(auth)';
 
     if (!isAuthenticated && !inAuthGroup) {
       router.replace('/(auth)/login' as any);
     } else if (isAuthenticated && inAuthGroup) {
+      fetchCategories();
       router.replace('/(tabs)' as any);
+    } else if (isAuthenticated && !inAuthGroup) {
+      fetchCategories();
     }
   }, [isAuthenticated, segments, mirageReady, hasAuthHydrated]);
 

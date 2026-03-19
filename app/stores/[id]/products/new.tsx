@@ -38,6 +38,7 @@ type FormValues = z.infer<typeof schema>;
 export default function NewProductScreen() {
   const { id: storeId } = useLocalSearchParams<{ id: string }>();
   const createProduct = useAppStore((s) => s.createProduct);
+  const categories = useAppStore((s) => s.categories);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -125,7 +126,7 @@ export default function NewProductScreen() {
                   </SelectTrigger>
                   <SelectPortal>
                     <SelectContent>
-                      {PRODUCT_CATEGORIES.map((cat) => (
+                      {categories.map((cat: string) => (
                         <SelectItem key={cat} label={cat} value={cat} />
                       ))}
                     </SelectContent>

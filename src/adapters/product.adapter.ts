@@ -1,7 +1,5 @@
 import { Product, ProductCategory, CreateProductInput, UpdateProductInput } from '../types';
 
-// ─── Raw API response shape ────────────────────────────────────────────────────
-
 interface RawProductResponse {
   id: string;
   storeId?: string;
@@ -14,15 +12,10 @@ interface RawProductResponse {
   created_at?: string;
 }
 
-// ─── Adapter ──────────────────────────────────────────────────────────────────
-
 export const productAdapter = {
-  /** Converts raw API response → typed Product model */
   fromResponse(raw: RawProductResponse): Product {
-    // MirageJS belongsTo pode aninhar o id em raw.store.id
     const storeId = raw.storeId ?? raw.store_id ?? raw.store?.id ?? '';
 
-    // Normaliza price: string com vírgula, undefined ou NaN → 0
     let price = 0;
     if (raw.price !== undefined && raw.price !== null) {
       const normalized =
@@ -42,7 +35,6 @@ export const productAdapter = {
     };
   },
 
-  /** Converts input → API create/update payload */
   toCreatePayload(data: CreateProductInput): Record<string, unknown> {
     return {
       name: data.name.trim(),

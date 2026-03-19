@@ -1,4 +1,4 @@
-import { createServer, Model, belongsTo, hasMany, RestSerializer } from 'miragejs';
+import { createServer, Model, belongsTo, hasMany, RestSerializer, Response } from 'miragejs';
 import { v4 as uuidv4 } from 'uuid';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -44,55 +44,6 @@ export async function makeServer() {
       server.create('category', { id: 'cat-3', name: 'Eletrônicos' });
       server.create('category', { id: 'cat-4', name: 'Acessórios' });
       server.create('category', { id: 'cat-5', name: 'Papelaria' });
-
-      // IDs fixos para que as URLs continuem válidas após recarregar a página
-      const lojaCentro = server.create('store', {
-        id: 'seed-store-001',
-        name: 'Loja Centro',
-        address: 'Rua das Flores, 123 – Centro',
-        createdAt: new Date().toISOString(),
-      });
-
-      const lojaShopping = server.create('store', {
-        id: 'seed-store-002',
-        name: 'Loja Shopping Norte',
-        address: 'Av. das Américas, 4666 – Shopping Norte, Loja 102',
-        createdAt: new Date().toISOString(),
-      });
-
-      const lojaZonaSul = server.create('store', {
-        id: 'seed-store-003',
-        name: 'Loja Zona Sul',
-        address: 'Rua XV de Novembro, 890 – Zona Sul',
-        createdAt: new Date().toISOString(),
-      });
-
-      const storeData: Array<{
-        storeId: string;
-        name: string;
-        category: string;
-        price: number;
-      }> = [
-        { storeId: lojaCentro.id, name: 'Camiseta Básica', category: 'Roupas', price: 49.9 },
-        { storeId: lojaCentro.id, name: 'Calça Jeans Slim', category: 'Roupas', price: 129.9 },
-        { storeId: lojaCentro.id, name: 'Tênis Casual', category: 'Calçados', price: 219.9 },
-        { storeId: lojaShopping.id, name: 'Fone de Ouvido Bluetooth', category: 'Eletrônicos', price: 299.9 },
-        { storeId: lojaShopping.id, name: 'Mochila Executiva', category: 'Acessórios', price: 189.9 },
-        { storeId: lojaZonaSul.id, name: 'Notebook i5', category: 'Eletrônicos', price: 3499.9 },
-        { storeId: lojaZonaSul.id, name: 'Mouse Sem Fio', category: 'Eletrônicos', price: 89.9 },
-        { storeId: lojaZonaSul.id, name: 'Caderno A4', category: 'Papelaria', price: 24.9 },
-      ];
-
-      storeData.forEach(({ storeId, name, category, price }) => {
-        server.create('product', {
-          id: uuidv4(),
-          storeId,
-          name,
-          category,
-          price,
-          createdAt: new Date().toISOString(),
-        });
-      });
     },
 
     routes() {
@@ -100,22 +51,19 @@ export async function makeServer() {
       this.namespace = 'api';
       this.timing = 300;
 
-      // Persist helper
       const persistDB = () => {
         AsyncStorage.setItem('mirage_db', JSON.stringify(this.db.dump())).catch(() => {});
       };
 
-      // ─── Categories ────────────────────────────────────────────────────────
       this.get('/categories', (schema) => {
         return schema.all('category').models;
       });
 
-      // ─── Auth ─────────────────────────────────────────────────────────────
       this.post('/auth/register', (schema, request) => {
         const attrs = JSON.parse(request.requestBody);
         const existing = schema.findBy('user', { email: attrs.email } as any);
         if (existing) {
-          return new Response(JSON.stringify({ message: 'E-mail já está em uso' }), { status: 400 });
+          return new Response(400, {}, { message: 'E-mail já está em uso' });
         }
         const user = schema.create('user', { id: uuidv4(), ...attrs });
         persistDB();
@@ -126,12 +74,11 @@ export async function makeServer() {
         const { email, password } = JSON.parse(request.requestBody);
         const user = schema.findBy('user', { email, password } as any);
         if (!user) {
-          return new Response(JSON.stringify({ message: 'Credenciais inválidas' }), { status: 401 });
+          return new Response(401, {}, { message: 'Credenciais inválidas' });
         }
         return { user, token: 'fake-jwt-token-' + user.id };
       });
 
-      // ─── Stores ───────────────────────────────────────────────────────────
       this.get('/stores', (schema, request) => {
         const userId = request.requestHeaders.Authorization?.replace('Bearer ', '');
         const stores = schema.where('store', (store: any) => store.userId === userId || store.userId === undefined);
@@ -154,12 +101,18 @@ export async function makeServer() {
           createdAt: new Date().toISOString(),
         });
         persistDB();
-        return res;
+        return {
+          id: res.id,
+          name: (res as any).name,
+          address: (res as any).address,
+          createdAt: (res as any).createdAt,
+          productsCount: 0,
+        };
       });
 
       this.get('/stores/:id', (schema, request) => {
         const store = schema.find('store', request.params.id);
-        if (!store) return new Response(JSON.stringify({ message: 'Loja não encontrada' }), { status: 404 });
+        if (!store) return new Response(404, {}, { message: 'Loja não encontrada' });
         return {
           id: store.id,
           name: (store as any).name,
@@ -171,7 +124,7 @@ export async function makeServer() {
 
       this.patch('/stores/:id', (schema, request) => {
         const store = schema.find('store', request.params.id);
-        if (!store) return new Response(JSON.stringify({ message: 'Loja não encontrada' }), { status: 404 });
+        if (!store) return new Response(404, {}, { message: 'Loja não encontrada' });
         const attrs = JSON.parse(request.requestBody);
         store.update(attrs);
         persistDB();
@@ -186,14 +139,13 @@ export async function makeServer() {
 
       this.del('/stores/:id', (schema, request) => {
         const store = schema.find('store', request.params.id);
-        if (!store) return new Response(JSON.stringify({ message: 'Loja não encontrada' }), { status: 404 });
+        if (!store) return new Response(404, {}, { message: 'Loja não encontrada' });
         schema.where('product', { storeId: request.params.id } as any).destroy();
         store.destroy();
         persistDB();
         return { message: 'Loja excluída com sucesso' };
       });
 
-      // ─── Products ─────────────────────────────────────────────────────────
       this.get('/stores/:storeId/products', (schema, request) => {
         return schema.where('product', { storeId: request.params.storeId } as any).models.map((p) => ({
           id: p.id,
@@ -227,7 +179,7 @@ export async function makeServer() {
 
       this.patch('/products/:id', (schema, request) => {
         const product = schema.find('product', request.params.id);
-        if (!product) return new Response(JSON.stringify({ message: 'Produto não encontrado' }), { status: 404 });
+        if (!product) return new Response(404, {}, { message: 'Produto não encontrado' });
         const attrs = JSON.parse(request.requestBody);
         product.update(attrs);
         persistDB();
@@ -243,7 +195,7 @@ export async function makeServer() {
 
       this.del('/products/:id', (schema, request) => {
         const product = schema.find('product', request.params.id);
-        if (!product) return new Response(JSON.stringify({ message: 'Produto não encontrado' }), { status: 404 });
+        if (!product) return new Response(404, {}, { message: 'Produto não encontrado' });
         product.destroy();
         persistDB();
         return { message: 'Produto excluído com sucesso' };

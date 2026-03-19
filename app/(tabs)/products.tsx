@@ -18,25 +18,12 @@ import { EmptyState } from '@/components/EmptyState';
 import { Spinner } from '@/components/ui/spinner';
 import { Product } from '@/src/types';
 
-const ALL_CATEGORIES = [
-  'Roupas',
-  'Calçados',
-  'Acessórios',
-  'Eletrônicos',
-  'Alimentos',
-  'Bebidas',
-  'Higiene',
-  'Papelaria',
-  'Brinquedos',
-  'Outros',
-];
-
 interface ProductWithStore extends Product {
   storeName: string;
 }
 
 export default function ProductsScreen() {
-  const { stores, products, fetchStores, fetchProducts, productsLoading, deleteProduct } =
+  const { stores, products, categories, fetchStores, fetchProducts, fetchCategories, productsLoading, deleteProduct } =
     useAppStore();
 
   const [search, setSearch] = useState('');
@@ -49,6 +36,7 @@ export default function ProductsScreen() {
   }, []);
 
   async function loadAll() {
+    await fetchCategories();
     await fetchStores();
     const currentStores = useAppStore.getState().stores;
     await Promise.all(currentStores.map((s) => fetchProducts(s.id)));
@@ -125,7 +113,7 @@ export default function ProductsScreen() {
 
       <FlatList
         data={filteredProducts}
-        keyExtractor={(item) => `${item.id}-${item.storeName}`}
+        keyExtractor={(item, index) => item?.id ? `${item.id}-${item.storeName || index}` : String(index)}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#3B82F6" />
         }
@@ -177,7 +165,7 @@ export default function ProductsScreen() {
           <View style={styles.sheetHandle} />
           <Text style={styles.sheetTitle}>Filtrar por Categoria</Text>
           <ScrollView showsVerticalScrollIndicator={false}>
-            {ALL_CATEGORIES.map((cat) => {
+            {categories.map((cat: string) => {
               const active = selectedCategories.includes(cat);
               return (
                 <Pressable

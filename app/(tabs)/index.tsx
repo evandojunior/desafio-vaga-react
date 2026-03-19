@@ -26,7 +26,7 @@ export default function StoresScreen() {
     <View style={styles.container}>
       <FlatList
         data={stores}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => item?.id || String(index)}
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={refetch} tintColor="#3B82F6" />
         }

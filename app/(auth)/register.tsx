@@ -13,7 +13,9 @@ export default function RegisterScreen() {
   const router = useRouter();
 
   const handleRegister = async () => {
-    if (!name || !email || !password) return Alert.alert('Erro', 'Preencha todos os campos');
+    if (!name || !email || !password) {
+      return Alert.alert('Erro', 'Preencha todos os campos');
+    }
     try {
       setLoading(true);
       const { user, token } = await repo.register(name, email, password);
@@ -34,7 +36,7 @@ export default function RegisterScreen() {
       <Text className="text-white mb-2 font-semibold text-base">Nome</Text>
       <TextInput
         className="bg-zinc-900 border border-zinc-800 text-white p-4 rounded-xl mb-4"
-        placeholder="O seu nome"
+        placeholder="Digite seu nome"
         placeholderTextColor="#555"
         value={name} onChangeText={setName} autoCapitalize="words"
       />

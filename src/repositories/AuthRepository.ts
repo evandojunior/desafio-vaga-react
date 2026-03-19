@@ -8,11 +8,23 @@ export interface IAuthRepository {
 
 export class AuthRepository implements IAuthRepository {
   async login(email: string, password: string): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('/auth/login', { email, password });
-    return response.data;
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw { response: { data } };
+    return data;
   }
   async register(name: string, email: string, password: string): Promise<AuthResponse> {
-    const response = await api.post<AuthResponse>('/auth/register', { name, email, password });
-    return response.data;
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw { response: { data } };
+    return data;
   }
 }

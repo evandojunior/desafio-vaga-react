@@ -38,14 +38,13 @@ describe('useStores hook', () => {
 
   it('loads stores on mount', async () => {
     const { result } = renderHook(() => useStores());
-    await act(async () => {});
+    await act(async () => { });
     expect(result.current.stores).toHaveLength(3);
   });
 
   it('filters stores by name', async () => {
     const { result } = renderHook(() => useStores('Centro'));
-    await act(async () => {});
-    // "Loja Centro" (name) and "Loja Sul" (address has "Centro")
+    await act(async () => { });
     expect(result.current.stores.length).toBeGreaterThan(0);
     result.current.stores.forEach((s) => {
       const matchesName = s.name.toLowerCase().includes('centro');
@@ -56,7 +55,7 @@ describe('useStores hook', () => {
 
   it('returns empty array when no match', async () => {
     const { result } = renderHook(() => useStores('xyzabc'));
-    await act(async () => {});
+    await act(async () => { });
     expect(result.current.stores).toHaveLength(0);
   });
 });

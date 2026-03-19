@@ -1,7 +1,5 @@
 import { Store, CreateStoreInput, UpdateStoreInput } from '../types';
 
-// ─── Raw API response shape ────────────────────────────────────────────────────
-
 interface RawStoreResponse {
   id: string;
   name: string;
@@ -12,10 +10,7 @@ interface RawStoreResponse {
   created_at?: string;
 }
 
-// ─── Adapter ──────────────────────────────────────────────────────────────────
-
 export const storeAdapter = {
-  /** Converts raw API response → typed Store model */
   fromResponse(raw: RawStoreResponse): Store {
     return {
       id: raw.id,
@@ -26,7 +21,6 @@ export const storeAdapter = {
     };
   },
 
-  /** Converts Store model → API create/update payload */
   toCreatePayload(data: CreateStoreInput): Record<string, unknown> {
     return {
       name: data.name.trim(),

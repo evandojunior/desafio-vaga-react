@@ -103,6 +103,39 @@ npx expo start
 
 ---
 
+## Rodando no emulador Android (apenas WSL2)
+
+> ⚠️ Esta seção é **exclusiva para quem roda o projeto dentro do WSL2** no Windows.  
+> Se você estiver no **Linux nativo, macOS ou Windows com terminal nativo**, o `npx expo start` + tecla `a` já funciona sem configuração extra.
+
+### Por que o WSL2 precisa de um passo extra?
+
+No WSL2, o Metro roda dentro de uma VM Linux com IP próprio. O emulador Android roda no Windows e não consegue alcançar esse IP diretamente:
+
+```
+Emulador Android (Windows) → localhost:8081
+                                    ↓ (sem adb reverse: conexão falha)
+                               WSL2 VM → Metro Bundler
+```
+
+O comando `adb reverse` cria um túnel entre o emulador e o WSL2.
+
+### Passo a passo (somente WSL2)
+
+```bash
+# 1. Com o emulador Android já aberto, rode no terminal WSL2:
+adb reverse tcp:8081 tcp:8081
+
+# 2. Inicie o Metro normalmente
+npx expo start
+
+# 3. No menu do Expo, pressione 'a' para abrir no emulador
+```
+
+> Se o Expo Go mostrar erro de conexão, force-feche o app no emulador e tente novamente.
+
+---
+
 ## Mock de back-end (MirageJS)
 
 O MirageJS é inicializado automaticamente em `app/_layout.tsx` ao montar o root layout.

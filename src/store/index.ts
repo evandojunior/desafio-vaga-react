@@ -26,6 +26,9 @@ interface ProductSlice {
   createProduct: (storeId: string, data: CreateProductInput) => Promise<Product>;
   updateProduct: (storeId: string, productId: string, data: UpdateProductInput) => Promise<void>;
   deleteProduct: (storeId: string, productId: string) => Promise<void>;
+
+  categories: string[];
+  fetchCategories: () => Promise<void>;
 }
 
 type AppState = StoreSlice & ProductSlice;
@@ -73,6 +76,15 @@ export const useAppStore = create<AppState>()(
       products: {},
       productsLoading: false,
       productsError: null,
+
+      categories: [],
+      fetchCategories: async () => {
+        try {
+          const res = await fetch('/api/categories');
+          const data = await res.json();
+          set({ categories: data.map((c: any) => c.name) });
+        } catch (e) {}
+      },
 
       fetchProducts: async (storeId) => {
         set({ productsLoading: true, productsError: null });

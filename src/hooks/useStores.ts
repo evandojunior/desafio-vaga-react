@@ -10,9 +10,11 @@ export function useStores(searchQuery = '') {
   }, []);
 
   const filtered = stores.filter(
-    (s) =>
-      s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.address.toLowerCase().includes(searchQuery.toLowerCase())
+    (s) => {
+      const nameMatch = (s?.name || '').toLowerCase().includes(searchQuery.toLowerCase());
+      const addrMatch = (s?.address || '').toLowerCase().includes(searchQuery.toLowerCase());
+      return nameMatch || addrMatch;
+    }
   );
 
   return {
