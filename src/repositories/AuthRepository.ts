@@ -1,5 +1,4 @@
 import { AuthResponse, AuthUser } from '../types/auth';
-import { api } from '../services/api';
 
 export interface IAuthRepository {
   login(email: string, password: string): Promise<AuthResponse>;

@@ -1,23 +1,59 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ScrollView, KeyboardAvoidingView, Platform, View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { shadow } from '@/src/utils/shadow';
-import { router } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { goBack } from '@/src/utils/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { PRODUCT_CATEGORIES, ProductCategory } from '@/src/types';
 import { useAppStore } from '@/src/store';
+import { formatCurrencyInput, parseCurrencyInput } from '@/src/utils/currency';
 import { Spinner } from '@/src/components/ui/spinner';
+import {
+  Select,
+  SelectTrigger,
+  SelectInput,
+  SelectIcon,
+  SelectPortal,
+  SelectContent,
+  SelectItem,
+} from '@/src/components/ui/select';
 
 const schema = z.object({
-  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(100),
-  address: z.string().min(5, 'Endereço deve ter pelo menos 5 caracteres').max(255),
+  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(100, 'Nome deve ter no máximo 100 caracteres'),
+  category: z.string().min(1, 'Selecione uma categoria') as z.ZodType<ProductCategory>,
+  price: z
+    .string()
+    .min(1, 'Informe o preço')
+    .refine((v) => parseCurrencyInput(v) > 0, {
+      message: 'Preço deve ser maior que zero',
+    }),
 });
 
 type FormValues = z.infer<typeof schema>;
 
-export default function NewStoreScreen() {
-  const createStore = useAppStore((s) => s.createStore);
+export default function NewProductScreen() {
+  const { id: storeId } = useLocalSearchParams<{ id: string }>();
+  const createProduct = useAppStore((s) => s.createProduct);
+  const categories = useAppStore((s) => s.categories);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <Pressable
+          onPress={() => goBack(`/stores/${storeId}`)}
+          style={{ paddingHorizontal: 8, paddingVertical: 4, marginLeft: 4 }}
+          hitSlop={8}
+        >
+          <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
+        </Pressable>
+      ),
+    });
+  }, [storeId]);
 
   const {
     control,
@@ -25,12 +61,21 @@ export default function NewStoreScreen() {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { name: '', address: '' },
+    defaultValues: { name: '', category: '' as ProductCategory, price: '' },
   });
 
   async function onSubmit(values: FormValues) {
-    await createStore(values);
-    goBack('/');
+    const { stores } = useAppStore.getState();
+    if (!stores.some((s) => s.id === storeId)) {
+      router.replace('/');
+      return;
+    }
+    await createProduct(storeId, {
+      name: values.name,
+      category: values.category,
+      price: parseCurrencyInput(values.price),
+    });
+    goBack(`/stores/${storeId}`);
   }
 
   return (
@@ -50,15 +95,16 @@ export default function NewStoreScreen() {
             name="name"
             render={({ field: { onChange, value, onBlur } }) => (
               <View style={styles.fieldGroup}>
-                <Text style={styles.label}>Nome da Loja <Text style={styles.required}>*</Text></Text>
+                <Text style={styles.label}>Nome do Produto <Text style={styles.required}>*</Text></Text>
                 <TextInput
                   style={[styles.input, !!errors.name && styles.inputError]}
-                  placeholder="Ex: Loja Centro"
+                  placeholder="Ex: Camiseta Básica"
                   placeholderTextColor="#555"
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
                   returnKeyType="next"
+                  maxLength={100}
                 />
                 {errors.name && (
                   <Text style={styles.errorText}>{errors.name.message}</Text>
@@ -67,26 +113,53 @@ export default function NewStoreScreen() {
             )}
           />
 
-          {/* Endereço */}
+          {/* Categoria */}
           <Controller
             control={control}
-            name="address"
+            name="category"
+            render={({ field: { onChange, value } }) => (
+              <View style={styles.fieldGroup}>
+                <Text style={styles.label}>Categoria <Text style={styles.required}>*</Text></Text>
+                <Select selectedValue={value} onValueChange={onChange} isInvalid={!!errors.category}>
+                  <SelectTrigger isInvalid={!!errors.category}>
+                    <SelectInput placeholder="Selecione uma categoria" />
+                    <SelectIcon />
+                  </SelectTrigger>
+                  <SelectPortal>
+                    <SelectContent>
+                      {categories.map((cat: string) => (
+                        <SelectItem key={cat} label={cat} value={cat} />
+                      ))}
+                    </SelectContent>
+                  </SelectPortal>
+                </Select>
+                {errors.category && (
+                  <Text style={styles.errorText}>{errors.category.message}</Text>
+                )}
+              </View>
+            )}
+          />
+
+          {/* Preço */}
+          <Controller
+            control={control}
+            name="price"
             render={({ field: { onChange, value, onBlur } }) => (
               <View style={styles.fieldGroup}>
-                <Text style={styles.label}>Endereço <Text style={styles.required}>*</Text></Text>
+                <Text style={styles.label}>Preço (R$) <Text style={styles.required}>*</Text></Text>
                 <TextInput
-                  style={[styles.input, styles.inputMultiline, !!errors.address && styles.inputError]}
-                  placeholder="Ex: Rua das Flores, 123 – Centro"
+                  style={[styles.input, !!errors.price && styles.inputError]}
+                  placeholder="R$ 0,00"
                   placeholderTextColor="#555"
                   value={value}
-                  onChangeText={onChange}
+                  onChangeText={(text) => onChange(formatCurrencyInput(text))}
                   onBlur={onBlur}
-                  multiline
-                  numberOfLines={2}
+                  keyboardType="numeric"
                   returnKeyType="done"
+                  maxLength={100}
                 />
-                {errors.address && (
-                  <Text style={styles.errorText}>{errors.address.message}</Text>
+                {errors.price && (
+                  <Text style={styles.errorText}>{errors.price.message}</Text>
                 )}
               </View>
             )}
@@ -96,7 +169,7 @@ export default function NewStoreScreen() {
           <View style={styles.buttonRow}>
             <Pressable
               style={({ pressed }) => [styles.btnCancel, pressed && styles.btnCancelPressed]}
-              onPress={() => goBack('/')}
+              onPress={() => goBack(`/stores/${storeId}`)}
             >
               <Text style={styles.btnCancelText}>Cancelar</Text>
             </Pressable>
@@ -148,11 +221,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     color: '#F9FAFB',
     fontSize: 14,
-  },
-  inputMultiline: {
-    minHeight: 72,
-    textAlignVertical: 'top',
-    paddingTop: 12,
   },
   inputError: {
     borderColor: '#EF4444',

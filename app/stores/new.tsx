@@ -1,59 +1,23 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ScrollView, KeyboardAvoidingView, Platform, View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { shadow } from '@/src/utils/shadow';
-import { useLocalSearchParams, router } from 'expo-router';
-import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { goBack } from '@/src/utils/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { PRODUCT_CATEGORIES, ProductCategory } from '@/src/types';
 import { useAppStore } from '@/src/store';
-import { formatCurrencyInput, numberToCurrencyInput, parseCurrencyInput } from '@/src/utils/currency';
 import { Spinner } from '@/src/components/ui/spinner';
-import {
-  Select,
-  SelectTrigger,
-  SelectInput,
-  SelectIcon,
-  SelectPortal,
-  SelectContent,
-  SelectItem,
-} from '@/src/components/ui/select';
 
 const schema = z.object({
-  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(100),
-  category: z.string().min(1, 'Selecione uma categoria') as z.ZodType<ProductCategory>,
-  price: z
-    .string()
-    .min(1, 'Informe o preço')
-    .refine((v) => parseCurrencyInput(v) > 0, {
-      message: 'Preço deve ser maior que zero',
-    }),
+  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(100, 'Nome deve ter no máximo 100 caracteres'),
+  address: z.string().min(5, 'Endereço deve ter pelo menos 5 caracteres').max(1000, 'Endereço deve ter no máximo 1000 caracteres'),
 });
 
 type FormValues = z.infer<typeof schema>;
 
-export default function EditProductScreen() {
-  const { id: storeId, productId } = useLocalSearchParams<{ id: string; productId: string }>();
-  const { products: allProducts, updateProduct } = useAppStore();
-  const product = (allProducts[storeId] ?? []).find((p) => p.id === productId);
-  const navigation = useNavigation();
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <Pressable
-          onPress={() => goBack(`/stores/${storeId}`)}
-          style={{ paddingHorizontal: 8, paddingVertical: 4, marginLeft: 4 }}
-          hitSlop={8}
-        >
-          <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
-        </Pressable>
-      ),
-    });
-  }, [storeId]);
+export default function NewStoreScreen() {
+  const createStore = useAppStore((s) => s.createStore);
 
   const {
     control,
@@ -61,28 +25,12 @@ export default function EditProductScreen() {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      name: product?.name ?? '',
-      category: product?.category ?? ('' as ProductCategory),
-      price: product ? numberToCurrencyInput(product.price) : '',
-    },
+    defaultValues: { name: '', address: '' },
   });
 
-  if (!product) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Spinner size="large" />
-      </View>
-    );
-  }
-
   async function onSubmit(values: FormValues) {
-    await updateProduct(storeId, productId, {
-      name: values.name,
-      category: values.category,
-      price: parseCurrencyInput(values.price),
-    });
-    goBack(`/stores/${storeId}`);
+    await createStore(values);
+    goBack('/');
   }
 
   return (
@@ -102,15 +50,16 @@ export default function EditProductScreen() {
             name="name"
             render={({ field: { onChange, value, onBlur } }) => (
               <View style={styles.fieldGroup}>
-                <Text style={styles.label}>Nome do Produto <Text style={styles.required}>*</Text></Text>
+                <Text style={styles.label}>Nome da Loja <Text style={styles.required}>*</Text></Text>
                 <TextInput
                   style={[styles.input, !!errors.name && styles.inputError]}
-                  placeholder="Ex: Camiseta Básica"
+                  placeholder="Ex: Loja Centro"
                   placeholderTextColor="#555"
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
                   returnKeyType="next"
+                  maxLength={100}
                 />
                 {errors.name && (
                   <Text style={styles.errorText}>{errors.name.message}</Text>
@@ -119,52 +68,27 @@ export default function EditProductScreen() {
             )}
           />
 
-          {/* Categoria */}
+          {/* Endereço */}
           <Controller
             control={control}
-            name="category"
-            render={({ field: { onChange, value } }) => (
-              <View style={styles.fieldGroup}>
-                <Text style={styles.label}>Categoria <Text style={styles.required}>*</Text></Text>
-                <Select selectedValue={value} onValueChange={onChange} isInvalid={!!errors.category}>
-                  <SelectTrigger isInvalid={!!errors.category}>
-                    <SelectInput placeholder="Selecione uma categoria" />
-                    <SelectIcon />
-                  </SelectTrigger>
-                  <SelectPortal>
-                    <SelectContent>
-                      {PRODUCT_CATEGORIES.map((cat) => (
-                        <SelectItem key={cat} label={cat} value={cat} />
-                      ))}
-                    </SelectContent>
-                  </SelectPortal>
-                </Select>
-                {errors.category && (
-                  <Text style={styles.errorText}>{errors.category.message}</Text>
-                )}
-              </View>
-            )}
-          />
-
-          {/* Preço */}
-          <Controller
-            control={control}
-            name="price"
+            name="address"
             render={({ field: { onChange, value, onBlur } }) => (
               <View style={styles.fieldGroup}>
-                <Text style={styles.label}>Preço (R$) <Text style={styles.required}>*</Text></Text>
+                <Text style={styles.label}>Endereço <Text style={styles.required}>*</Text></Text>
                 <TextInput
-                  style={[styles.input, !!errors.price && styles.inputError]}
-                  placeholder="R$ 0,00"
+                  style={[styles.input, styles.inputMultiline, !!errors.address && styles.inputError]}
+                  placeholder="Ex: Rua das Flores, 123 – Centro"
                   placeholderTextColor="#555"
                   value={value}
-                  onChangeText={(text) => onChange(formatCurrencyInput(text))}
+                  onChangeText={onChange}
                   onBlur={onBlur}
-                  keyboardType="numeric"
+                  multiline
+                  numberOfLines={2}
                   returnKeyType="done"
+                  maxLength={1000}
                 />
-                {errors.price && (
-                  <Text style={styles.errorText}>{errors.price.message}</Text>
+                {errors.address && (
+                  <Text style={styles.errorText}>{errors.address.message}</Text>
                 )}
               </View>
             )}
@@ -174,7 +98,7 @@ export default function EditProductScreen() {
           <View style={styles.buttonRow}>
             <Pressable
               style={({ pressed }) => [styles.btnCancel, pressed && styles.btnCancelPressed]}
-              onPress={() => goBack(`/stores/${storeId}`)}
+              onPress={() => goBack('/')}
             >
               <Text style={styles.btnCancelText}>Cancelar</Text>
             </Pressable>
@@ -200,12 +124,6 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   scroll: { flex: 1, backgroundColor: '#0F0F0F' },
   scrollContent: { flexGrow: 1 },
-  loadingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#0F0F0F',
-  },
   formContainer: {
     flex: 1,
     padding: 16,
@@ -232,6 +150,11 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     color: '#F9FAFB',
     fontSize: 14,
+  },
+  inputMultiline: {
+    minHeight: 72,
+    textAlignVertical: 'top',
+    paddingTop: 12,
   },
   inputError: {
     borderColor: '#EF4444',

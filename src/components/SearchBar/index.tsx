@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, TextInput, Pressable, StyleSheet } from 'react-native';
+import { View, TextInput, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { styles } from './styles';
 
 interface SearchBarProps {
   value: string;
@@ -30,27 +31,3 @@ export function SearchBar({ value, onChangeText, placeholder = 'Buscar...', clas
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#1A1A1A',
-    borderWidth: 1,
-    borderColor: '#333333',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    gap: 8,
-  },
-  searchIcon: {
-    flexShrink: 0,
-  },
-  input: {
-    flex: 1,
-    color: '#F9FAFB',
-    fontSize: 14,
-    padding: 0,
-    margin: 0,
-  },
-});

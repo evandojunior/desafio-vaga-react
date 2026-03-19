@@ -2,6 +2,7 @@ import { renderHook, act } from '@testing-library/react-native';
 import { useStores } from '../src/hooks/useStores';
 import { useAppStore } from '../src/store';
 import { storeRepository } from '../src/repositories/StoreRepository';
+import { Store } from '../src/types';
 
 jest.mock('../src/repositories/StoreRepository', () => ({
   storeRepository: {
@@ -24,7 +25,7 @@ jest.mock('../src/repositories/ProductRepository', () => ({
 
 const mockedStoreRepo = storeRepository as jest.Mocked<typeof storeRepository>;
 
-const mockStores = [
+const mockStores: Store[] = [
   { id: '1', name: 'Loja Centro', address: 'Rua A, 1', productsCount: 3, createdAt: '' },
   { id: '2', name: 'Loja Norte', address: 'Av. B, 2', productsCount: 0, createdAt: '' },
   { id: '3', name: 'Loja Sul', address: 'Rua Centro, 99', productsCount: 1, createdAt: '' },

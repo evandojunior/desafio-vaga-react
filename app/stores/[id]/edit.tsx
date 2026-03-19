@@ -11,8 +11,8 @@ import { useAppStore } from '@/src/store';
 import { Spinner } from '@/src/components/ui/spinner';
 
 const schema = z.object({
-  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(100),
-  address: z.string().min(5, 'Endereço deve ter pelo menos 5 caracteres').max(255),
+  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(100, 'Nome deve ter no máximo 100 caracteres'),
+  address: z.string().min(5, 'Endereço deve ter pelo menos 5 caracteres').max(1000, 'Endereço deve ter no máximo 1000 caracteres'),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -73,6 +73,7 @@ export default function EditStoreScreen() {
                   onChangeText={onChange}
                   onBlur={onBlur}
                   returnKeyType="next"
+                  maxLength={100}
                 />
                 {errors.name && (
                   <Text style={styles.errorText}>{errors.name.message}</Text>
@@ -98,6 +99,7 @@ export default function EditStoreScreen() {
                   multiline
                   numberOfLines={2}
                   returnKeyType="done"
+                  maxLength={1000}
                 />
                 {errors.address && (
                   <Text style={styles.errorText}>{errors.address.message}</Text>

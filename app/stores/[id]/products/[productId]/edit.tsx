@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { PRODUCT_CATEGORIES, ProductCategory } from '@/src/types';
 import { useAppStore } from '@/src/store';
-import { formatCurrencyInput, parseCurrencyInput } from '@/src/utils/currency';
+import { formatCurrencyInput, numberToCurrencyInput, parseCurrencyInput } from '@/src/utils/currency';
 import { Spinner } from '@/src/components/ui/spinner';
 import {
   Select,
@@ -23,7 +23,7 @@ import {
 } from '@/src/components/ui/select';
 
 const schema = z.object({
-  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(100),
+  name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(100, 'Nome deve ter no máximo 100 caracteres'),
   category: z.string().min(1, 'Selecione uma categoria') as z.ZodType<ProductCategory>,
   price: z
     .string()
@@ -35,10 +35,10 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-export default function NewProductScreen() {
-  const { id: storeId } = useLocalSearchParams<{ id: string }>();
-  const createProduct = useAppStore((s) => s.createProduct);
-  const categories = useAppStore((s) => s.categories);
+export default function EditProductScreen() {
+  const { id: storeId, productId } = useLocalSearchParams<{ id: string; productId: string }>();
+  const { products: allProducts, updateProduct } = useAppStore();
+  const product = (allProducts[storeId] ?? []).find((p) => p.id === productId);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -61,16 +61,23 @@ export default function NewProductScreen() {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { name: '', category: '' as ProductCategory, price: '' },
+    defaultValues: {
+      name: product?.name ?? '',
+      category: product?.category ?? ('' as ProductCategory),
+      price: product ? numberToCurrencyInput(product.price) : '',
+    },
   });
 
+  if (!product) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Spinner size="large" />
+      </View>
+    );
+  }
+
   async function onSubmit(values: FormValues) {
-    const { stores } = useAppStore.getState();
-    if (!stores.some((s) => s.id === storeId)) {
-      router.replace('/');
-      return;
-    }
-    await createProduct(storeId, {
+    await updateProduct(storeId, productId, {
       name: values.name,
       category: values.category,
       price: parseCurrencyInput(values.price),
@@ -104,6 +111,7 @@ export default function NewProductScreen() {
                   onChangeText={onChange}
                   onBlur={onBlur}
                   returnKeyType="next"
+                  maxLength={100}
                 />
                 {errors.name && (
                   <Text style={styles.errorText}>{errors.name.message}</Text>
@@ -126,7 +134,7 @@ export default function NewProductScreen() {
                   </SelectTrigger>
                   <SelectPortal>
                     <SelectContent>
-                      {categories.map((cat: string) => (
+                      {PRODUCT_CATEGORIES.map((cat) => (
                         <SelectItem key={cat} label={cat} value={cat} />
                       ))}
                     </SelectContent>
@@ -155,6 +163,7 @@ export default function NewProductScreen() {
                   onBlur={onBlur}
                   keyboardType="numeric"
                   returnKeyType="done"
+                  maxLength={100}
                 />
                 {errors.price && (
                   <Text style={styles.errorText}>{errors.price.message}</Text>
@@ -193,6 +202,12 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   scroll: { flex: 1, backgroundColor: '#0F0F0F' },
   scrollContent: { flexGrow: 1 },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0F0F0F',
+  },
   formContainer: {
     flex: 1,
     padding: 16,

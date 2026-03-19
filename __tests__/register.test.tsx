@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import RegisterScreen from '../src/app/(auth)/register';
+import RegisterScreen from '../app/(auth)/register';
 import { useAuthStore } from '../src/store/useAuthStore';
 import { AuthRepository } from '../src/repositories/AuthRepository';
 import { useRouter } from 'expo-router';

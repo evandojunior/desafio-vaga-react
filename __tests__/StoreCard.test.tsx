@@ -16,6 +16,29 @@ jest.mock('@expo/vector-icons', () => {
   };
 });
 
+// Mock the UI components used to simplify test
+jest.mock('../src/components/ui/alert-dialog', () => ({
+  AlertDialog: ({ isOpen, children }: any) => (isOpen ? <>{children}</> : null),
+  AlertDialogContent: ({ children }: any) => <>{children}</>,
+  AlertDialogHeader: ({ children }: any) => <>{children}</>,
+  AlertDialogBody: ({ children }: any) => <>{children}</>,
+  AlertDialogFooter: ({ children }: any) => <>{children}</>,
+}));
+
+jest.mock('../src/components/ui/heading', () => {
+  const { Text } = require('react-native');
+  return {
+    Heading: ({ children }: any) => <Text>{children}</Text>,
+  };
+});
+
+jest.mock('../src/components/ui/text', () => {
+  const { Text } = require('react-native');
+  return {
+    Text: ({ children }: any) => <Text>{children}</Text>,
+  };
+});
+
 const mockStore: Store = {
   id: '1',
   name: 'Loja Teste',
@@ -42,7 +65,7 @@ describe('StoreCard', () => {
     expect(getByText('5 prods.')).toBeTruthy();
   });
 
-  it('shows delete dialog when trash icon is pressed', () => {
+  it('shows delete dialog when trash icon is pressed', async () => {
     const onDelete = jest.fn();
     const { getByText, queryByText } = render(
       <StoreCard store={mockStore} onDelete={onDelete} />
@@ -50,7 +73,7 @@ describe('StoreCard', () => {
 
     expect(queryByText('Excluir Loja')).toBeNull();
     fireEvent.press(getByText('trash-outline'));
-    expect(getByText('Excluir Loja')).toBeTruthy();
+    expect(await waitFor(() => getByText('Excluir Loja'))).toBeTruthy();
   });
 
   it('calls onDelete when confirming deletion', async () => {

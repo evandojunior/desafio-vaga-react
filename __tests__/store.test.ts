@@ -1,6 +1,7 @@
 import { useAppStore } from '../src/store';
 import { storeRepository } from '../src/repositories/StoreRepository';
 import { productRepository } from '../src/repositories/ProductRepository';
+import { Product, Store } from '../src/types';
 
 // Mock repositories 
 jest.mock('../src/repositories/StoreRepository', () => ({
@@ -41,7 +42,7 @@ describe('useAppStore – Unit Tests (Store & Product Modules)', () => {
 
   describe('Stores Management', () => {
     it('fetches stores successfully and populates state', async () => {
-      const mockStores = [
+      const mockStores: Store[] = [
         { id: '100', name: 'Virtual Store 1', address: 'Web Address 1', productsCount: 5, createdAt: new Date().toISOString() },
         { id: '101', name: 'Virtual Store 2', address: 'Web Address 2', productsCount: 1, createdAt: new Date().toISOString() },
       ];
@@ -107,9 +108,9 @@ describe('useAppStore – Unit Tests (Store & Product Modules)', () => {
     });
 
     it('fetches products specifically for a single store', async () => {
-      const mockProducts = [
+      const mockProducts: Product[] = [
         { id: 'p1', storeId, name: 'Soap', category: 'Higiene', price: 5, createdAt: '' },
-        { id: 'p2', storeId, name: 'Towel', category: 'Banho', price: 20, createdAt: '' }
+        { id: 'p2', storeId, name: 'Towel', category: 'Outros', price: 20, createdAt: '' }
       ];
       mockedProductRepo.getByStore.mockResolvedValue(mockProducts);
 
@@ -121,7 +122,7 @@ describe('useAppStore – Unit Tests (Store & Product Modules)', () => {
     });
 
     it('creates a product and updates the stores productCount locally', async () => {
-      const newProduct = {
+      const newProduct: Product = {
         id: 'newP', storeId, name: 'Shampoo', category: 'Higiene', price: 15, createdAt: ''
       };
       mockedProductRepo.create.mockResolvedValue(newProduct);
