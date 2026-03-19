@@ -1,3 +1,4 @@
+import 'react-native-get-random-values';
 import '../global.css';
 
 import { useEffect } from 'react';
@@ -24,11 +25,7 @@ export default function RootLayout() {
           contentStyle: { backgroundColor: '#0F0F0F' },
         }}
       >
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="stores/index"
-          options={{ title: 'Minhas Lojas' }}
-        />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="stores/new"
           options={{
