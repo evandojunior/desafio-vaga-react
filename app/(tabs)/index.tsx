@@ -8,6 +8,7 @@ import { SearchBar } from '@/components/SearchBar';
 import { EmptyState } from '@/components/EmptyState';
 import { Spinner } from '@/components/ui/spinner';
 import { Text } from '@/components/ui/text';
+import { Fab, FabLabel } from '@/components/ui/fab';
 
 export default function StoresScreen() {
   const [search, setSearch] = useState('');
@@ -31,7 +32,7 @@ export default function StoresScreen() {
         }
         ListHeaderComponent={
           <View style={styles.listHeader}>
-            <View style={styles.counterRow}>
+            <View style={styles.headerTop}>
               <RNText style={styles.counterText}>
                 {stores.length} {stores.length === 1 ? 'loja' : 'lojas'}
               </RNText>
@@ -67,13 +68,17 @@ export default function StoresScreen() {
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
       />
 
-      {/* FAB */}
-      <Pressable
+      <Fab
+        size="md"
+        placement="bottom right"
+        isHovered={false}
+        isDisabled={false}
+        isPressed={false}
         onPress={() => router.push('/stores/new')}
-        style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
       >
-        <Ionicons name="add" size={28} color="#fff" />
-      </Pressable>
+        <Ionicons name="add" size={20}  className="mr-1" />
+        <FabLabel>Nova Loja</FabLabel>
+      </Fab>
     </View>
   );
 }
@@ -91,13 +96,14 @@ const styles = StyleSheet.create({
   },
   listHeader: {
     paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingTop: 32,
     paddingBottom: 8,
-    gap: 12,
+    gap: 14,
   },
-  counterRow: {
+  headerTop: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   counterText: {
     color: '#6B7280',
@@ -109,24 +115,5 @@ const styles = StyleSheet.create({
   cardWrapper: {
     paddingHorizontal: 16,
   },
-  fab: {
-    position: 'absolute',
-    bottom: 24,
-    right: 24,
-    backgroundColor: '#2563EB',
-    borderRadius: 28,
-    width: 56,
-    height: 56,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#3B82F6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  fabPressed: {
-    backgroundColor: '#1D4ED8',
-    shadowOpacity: 0.3,
-  },
+
 });

@@ -60,9 +60,16 @@ function SelectTrigger({ className, isInvalid, children }: SelectTriggerProps) {
   return (
     <Pressable
       onPress={() => setIsOpen(true)}
-      className={`flex-row items-center border rounded-lg h-11 px-4 ${
-        isInvalid ? 'border-error-500' : 'border-outline-300'
-      } bg-white ${className ?? ''}`}
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: 46,
+        paddingHorizontal: 14,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: isInvalid ? '#EF4444' : '#333333',
+        backgroundColor: '#1A1A1A',
+      }}
     >
       {children}
     </Pressable>
@@ -75,7 +82,11 @@ function SelectInput({ placeholder, className }: { placeholder?: string; classNa
   const { value } = React.useContext(SelectContext);
   return (
     <Text
-      className={`flex-1 text-base ${value ? 'text-typography-900' : 'text-typography-400'} ${className ?? ''}`}
+      style={{
+        flex: 1,
+        fontSize: 14,
+        color: value ? '#F9FAFB' : '#555555',
+      }}
     >
       {value || placeholder || 'Selecione...'}
     </Text>
@@ -114,7 +125,8 @@ function SelectContent({ className, children }: SelectContentProps) {
     <Modal transparent visible={isOpen} animationType="fade" onRequestClose={() => setIsOpen(false)}>
       <Pressable className="flex-1 bg-black/40 justify-end" onPress={() => setIsOpen(false)}>
         <Pressable onPress={(e) => e.stopPropagation()}>
-          <View className={`bg-white rounded-t-2xl py-4 max-h-80 ${className ?? ''}`}>
+          <View style={{ backgroundColor: '#1A1A1A', borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 16, maxHeight: 320 }}>
+            <View style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: '#444', alignSelf: 'center', marginTop: 12, marginBottom: 8 }} />
             <FlatList
               data={[]}
               renderItem={null}
@@ -143,12 +155,19 @@ function SelectItemComponent({ label, value }: SelectItemProps) {
         onValueChange(value);
         setIsOpen(false);
       }}
-      className={`px-5 py-3.5 flex-row items-center justify-between ${isSelected ? 'bg-primary-50' : ''}`}
+      style={{
+        paddingHorizontal: 20,
+        paddingVertical: 14,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        backgroundColor: isSelected ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+      }}
     >
-      <Text className={`text-base ${isSelected ? 'text-primary-600 font-semibold' : 'text-typography-900'}`}>
+      <Text style={{ fontSize: 14, color: isSelected ? '#3B82F6' : '#F9FAFB', fontWeight: isSelected ? '600' : '400' }}>
         {label}
       </Text>
-      {isSelected && <Ionicons name="checkmark" size={18} color="#1976D2" />}
+      {isSelected && <Ionicons name="checkmark" size={18} color="#3B82F6" />}
     </TouchableOpacity>
   );
 }

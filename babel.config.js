@@ -1,14 +1,23 @@
 module.exports = function (api) {
   api.cache(true);
+
   return {
-    presets: [
-      ['babel-preset-expo', { jsxImportSource: 'nativewind' }],
-      'nativewind/babel',
-    ],
+    presets: [['babel-preset-expo']],
+
     plugins: [
-      'react-native-worklets/plugin',
-      // Fix MirageJS/Pretender no web: converte import.meta para process.env
-      ['babel-plugin-transform-import-meta', {}],
+      [
+        'module-resolver',
+        {
+          root: ['./'],
+
+          alias: {
+            '@': './',
+            'tailwind.config': './tailwind.config.js',
+          },
+        },
+      ],
+      'babel-plugin-transform-import-meta',
+      'react-native-reanimated/plugin',
     ],
   };
 };

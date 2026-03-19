@@ -9,6 +9,7 @@ import {
   ScrollView,
   RefreshControl,
 } from 'react-native';
+import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppStore } from '@/src/store';
 import { ProductCard } from '@/components/ProductCard';
@@ -101,6 +102,13 @@ export default function ProductsScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
+        <Pressable
+          onPress={() => router.replace('/')}
+          style={({ pressed }) => [styles.backBtn, pressed && styles.backBtnPressed]}
+          hitSlop={8}
+        >
+          <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
+        </Pressable>
         <Text style={styles.headerTitle}>Produtos</Text>
         <Pressable
           onPress={() => setFilterModalVisible(true)}
@@ -135,14 +143,10 @@ export default function ProductsScreen() {
         }
         renderItem={({ item }) => (
           <View style={styles.cardWrapper}>
-            {/* Store tag */}
-            <View style={styles.storeTag}>
-              <Ionicons name="storefront-outline" size={12} color="#6B7280" />
-              <Text style={styles.storeTagText}>{item.storeName}</Text>
-            </View>
             <ProductCard
               product={item}
               storeId={item.storeId}
+              storeName={item.storeName}
               onDelete={(productId) => deleteProduct(item.storeId, productId)}
             />
           </View>
@@ -235,6 +239,17 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
+  backBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+  backBtnPressed: {
+    backgroundColor: '#2A2A2A',
+  },
   filterBtn: {
     width: 40,
     height: 40,
@@ -277,18 +292,6 @@ const styles = StyleSheet.create({
   },
   cardWrapper: {
     paddingHorizontal: 16,
-  },
-  storeTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginBottom: 4,
-    marginTop: 4,
-  },
-  storeTagText: {
-    color: '#6B7280',
-    fontSize: 11,
-    fontWeight: '500',
   },
   // Modal / BottomSheet
   modalOverlay: {

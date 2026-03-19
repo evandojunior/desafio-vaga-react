@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FlatList, Pressable, RefreshControl, StyleSheet, View, Text as RNText } from 'react-native';
+import { shadow } from '@/src/utils/shadow';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useStores } from '@/src/hooks/useStores';
@@ -122,14 +123,9 @@ const styles = StyleSheet.create({
     height: 56,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#3B82F6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-    elevation: 8,
+    ...shadow('#3B82F6', 4, 12, 0.5, 8),
   },
   fabPressed: {
     backgroundColor: '#1D4ED8',
-    shadowOpacity: 0.3,
   },
 });

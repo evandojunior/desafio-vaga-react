@@ -1,6 +1,8 @@
 import React from 'react';
 import { ScrollView, KeyboardAvoidingView, Platform, View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import { shadow } from '@/src/utils/shadow';
 import { useLocalSearchParams, router } from 'expo-router';
+import { goBack } from '@/src/utils/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -42,7 +44,7 @@ export default function EditStoreScreen() {
 
   async function onSubmit(values: FormValues) {
     await updateStore(id, values);
-    router.back();
+    goBack(`/stores/${id}`);
   }
 
   return (
@@ -108,7 +110,7 @@ export default function EditStoreScreen() {
           <View style={styles.buttonRow}>
             <Pressable
               style={({ pressed }) => [styles.btnCancel, pressed && styles.btnCancelPressed]}
-              onPress={() => router.back()}
+              onPress={() => goBack(`/stores/${id}`)}
             >
               <Text style={styles.btnCancelText}>Cancelar</Text>
             </Pressable>
@@ -208,11 +210,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: '#2563EB',
     alignItems: 'center',
-    shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 6,
+    ...shadow('#2563EB', 4, 8, 0.4, 6),
   },
   btnSubmitPressed: {
     backgroundColor: '#1D4ED8',

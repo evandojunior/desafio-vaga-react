@@ -15,8 +15,8 @@ const sizeMap = {
 };
 
 const variantMap = {
-  elevated: 'bg-white shadow-sm shadow-background-400',
-  outline: 'bg-white border border-outline-200',
+  elevated: 'bg-background-0 shadow-sm shadow-background-400',
+  outline: 'bg-background-0 border border-outline-200',
   ghost: 'bg-transparent',
   filled: 'bg-background-50',
 };

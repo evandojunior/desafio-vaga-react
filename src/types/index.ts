@@ -1,5 +1,3 @@
-// ─── Store ────────────────────────────────────────────────────────────────────
-
 export interface Store {
   id: string;
   name: string;
@@ -10,8 +8,6 @@ export interface Store {
 
 export type CreateStoreInput = Pick<Store, 'name' | 'address'>;
 export type UpdateStoreInput = Partial<CreateStoreInput>;
-
-// ─── Product ──────────────────────────────────────────────────────────────────
 
 export type ProductCategory =
   | 'Roupas'
@@ -49,8 +45,6 @@ export interface Product {
 
 export type CreateProductInput = Pick<Product, 'name' | 'category' | 'price'>;
 export type UpdateProductInput = Partial<CreateProductInput>;
-
-// ─── API response ─────────────────────────────────────────────────────────────
 
 export interface ApiError {
   message: string;

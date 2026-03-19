@@ -59,7 +59,7 @@ export default function AboutScreen() {
         </Pressable>
 
         <Pressable
-          onPress={() => openLink('https://github.com/evandojuniordev')}
+          onPress={() => openLink('https://github.com/evandojunior')}
           style={({ pressed }) => [styles.linkCard, pressed && styles.linkCardPressed]}
         >
           <View style={[styles.linkIconContainer, styles.githubBg]}>

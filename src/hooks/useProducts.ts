@@ -3,6 +3,9 @@ import { useAppStore } from '../store';
 
 export function useProducts(storeId: string, searchQuery = '') {
   const {
+    stores,
+    storesLoading,
+    fetchStores,
     products: allProducts,
     productsLoading,
     productsError,
@@ -15,8 +18,19 @@ export function useProducts(storeId: string, searchQuery = '') {
   const products = allProducts[storeId] ?? [];
 
   useEffect(() => {
-    fetchProducts(storeId);
-  }, [storeId]);
+    async function load() {
+      let currentStores = stores;
+      if (currentStores.length === 0 && !storesLoading) {
+        await fetchStores();
+        currentStores = useAppStore.getState().stores;
+      }
+      const storeExists = currentStores.some((s) => s.id === storeId);
+      if (storeExists) {
+        await fetchProducts(storeId);
+      }
+    }
+    load();
+  }, [storeId, stores.length]);
 
   const filtered = products.filter(
     (p) =>

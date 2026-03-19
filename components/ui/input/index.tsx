@@ -22,7 +22,7 @@ const Input = React.forwardRef<View, InputProps>(
       ref={ref}
       className={`flex-row items-center border rounded-lg overflow-hidden ${sizeMap[size]} ${
         isInvalid ? 'border-error-500' : 'border-outline-300'
-      } ${isDisabled ? 'opacity-50 bg-background-100' : 'bg-white'} ${className ?? ''}`}
+      } ${isDisabled ? 'opacity-50 bg-background-100' : 'bg-background-0'} ${className ?? ''}`}
       {...props}
     >
       {children}

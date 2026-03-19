@@ -4,9 +4,17 @@ import { IProductRepository } from './IProductRepository';
 
 const BASE_URL = '/api';
 
+import { useAuthStore } from '../store/useAuthStore';
+
 async function http<T>(url: string, options?: RequestInit): Promise<T> {
+  const token = useAuthStore.getState().token;
   const response = await fetch(`${BASE_URL}${url}`, {
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json', ...options?.headers },
+    headers: { 
+      'Content-Type': 'application/json', 
+      Accept: 'application/json', 
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options?.headers 
+    },
     ...options,
   });
   if (!response.ok) {

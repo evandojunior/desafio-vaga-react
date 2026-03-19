@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FlatList, Pressable, RefreshControl, View, Text, StyleSheet } from 'react-native';
+import { shadow } from '@/src/utils/shadow';
 import { useLocalSearchParams, router, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useStore } from '@/src/hooks/useStores';
@@ -19,16 +20,33 @@ export default function StoreDetailScreen() {
 
   useEffect(() => {
     if (store) {
-      navigation.setOptions({ title: store.name });
+      navigation.setOptions({
+        title: store.name,
+        headerLeft: () => (
+          <Pressable
+            onPress={() => router.replace('/')}
+            style={{ paddingHorizontal: 8, paddingVertical: 4, marginLeft: 4 }}
+            hitSlop={8}
+          >
+            <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
+          </Pressable>
+        ),
+      });
     }
   }, [store?.name]);
 
-  if (!store && isLoading) {
+  if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <Spinner size="large" />
       </View>
     );
+  }
+
+  // Loja não existe (sessão do Mirage reiniciou ou ID inválido)
+  if (!store) {
+    router.replace('/');
+    return null;
   }
 
   return (
@@ -213,14 +231,9 @@ const styles = StyleSheet.create({
     height: 56,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#3B82F6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 12,
-    elevation: 8,
+    ...shadow('#3B82F6', 4, 12, 0.5, 8),
   },
   fabPressed: {
     backgroundColor: '#1D4ED8',
-    shadowOpacity: 0.3,
   },
 });

@@ -1,9 +1,12 @@
 const { getDefaultConfig } = require('expo/metro-config');
-const { withNativeWind } = require('nativewind/metro');
+const { withNativewind } = require('nativewind/metro');
 
 const config = getDefaultConfig(__dirname);
 
-// Fix para MirageJS no web — resolve módulos Node que o browser não tem
-config.resolver.unstable_enablePackageExports = false;
+config.resolver.unstable_conditionNames = [
+  'require',
+  'react-native',
+  'default',
+];
 
-module.exports = withNativeWind(config, { input: './global.css' });
+module.exports = withNativewind(config, { input: './global.css' });

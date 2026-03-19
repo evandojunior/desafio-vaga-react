@@ -5,8 +5,6 @@ import { Store, Product, CreateStoreInput, UpdateStoreInput, CreateProductInput,
 import { storeRepository } from '../repositories/StoreRepository';
 import { productRepository } from '../repositories/ProductRepository';
 
-// ─── Store slice ──────────────────────────────────────────────────────────────
-
 interface StoreSlice {
   stores: Store[];
   storesLoading: boolean;
@@ -18,7 +16,6 @@ interface StoreSlice {
   deleteStore: (id: string) => Promise<void>;
 }
 
-// ─── Product slice ────────────────────────────────────────────────────────────
 
 interface ProductSlice {
   products: Record<string, Product[]>;
@@ -31,14 +28,11 @@ interface ProductSlice {
   deleteProduct: (storeId: string, productId: string) => Promise<void>;
 }
 
-// ─── Combined store ───────────────────────────────────────────────────────────
-
 type AppState = StoreSlice & ProductSlice;
 
 export const useAppStore = create<AppState>()(
   persist(
     (set, _get) => ({
-      // ── Stores ──
       stores: [],
       storesLoading: false,
       storesError: null,
@@ -76,7 +70,6 @@ export const useAppStore = create<AppState>()(
         }));
       },
 
-      // ── Products ──
       products: {},
       productsLoading: false,
       productsError: null,
@@ -139,17 +132,13 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'app-storage',
+      version: 2,
+      migrate: () => ({ stores: [], products: {} }),
       storage: createJSONStorage(() => AsyncStorage),
-      // Persist only the data, not loading/error states
-      partialize: (state) => ({
-        stores: state.stores,
-        products: state.products,
-      }),
+      partialize: () => ({}),
     }
   )
 );
-
-// ─── Selectors ────────────────────────────────────────────────────────────────
 
 export const selectStores = (state: AppState) => state.stores;
 export const selectProducts = (storeId: string) => (state: AppState) =>

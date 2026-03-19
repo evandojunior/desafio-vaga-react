@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ScrollView, KeyboardAvoidingView, Platform, View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import { shadow } from '@/src/utils/shadow';
 import { useLocalSearchParams, router } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+import { goBack } from '@/src/utils/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { PRODUCT_CATEGORIES, ProductCategory } from '@/src/types';
 import { useAppStore } from '@/src/store';
+import { formatCurrencyInput, numberToCurrencyInput, parseCurrencyInput } from '@/src/utils/currency';
 import { Spinner } from '@/components/ui/spinner';
 import {
   Select,
@@ -23,7 +28,7 @@ const schema = z.object({
   price: z
     .string()
     .min(1, 'Informe o preço')
-    .refine((v) => !isNaN(parseFloat(v.replace(',', '.'))) && parseFloat(v.replace(',', '.')) > 0, {
+    .refine((v) => parseCurrencyInput(v) > 0, {
       message: 'Preço deve ser maior que zero',
     }),
 });
@@ -34,6 +39,21 @@ export default function EditProductScreen() {
   const { id: storeId, productId } = useLocalSearchParams<{ id: string; productId: string }>();
   const { products: allProducts, updateProduct } = useAppStore();
   const product = (allProducts[storeId] ?? []).find((p) => p.id === productId);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <Pressable
+          onPress={() => goBack(`/stores/${storeId}`)}
+          style={{ paddingHorizontal: 8, paddingVertical: 4, marginLeft: 4 }}
+          hitSlop={8}
+        >
+          <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
+        </Pressable>
+      ),
+    });
+  }, [storeId]);
 
   const {
     control,
@@ -44,7 +64,7 @@ export default function EditProductScreen() {
     defaultValues: {
       name: product?.name ?? '',
       category: product?.category ?? ('' as ProductCategory),
-      price: product ? String(product.price).replace('.', ',') : '',
+      price: product ? numberToCurrencyInput(product.price) : '',
     },
   });
 
@@ -60,9 +80,9 @@ export default function EditProductScreen() {
     await updateProduct(storeId, productId, {
       name: values.name,
       category: values.category,
-      price: parseFloat(values.price.replace(',', '.')),
+      price: parseCurrencyInput(values.price),
     });
-    router.back();
+    goBack(`/stores/${storeId}`);
   }
 
   return (
@@ -135,12 +155,12 @@ export default function EditProductScreen() {
                 <Text style={styles.label}>Preço (R$) <Text style={styles.required}>*</Text></Text>
                 <TextInput
                   style={[styles.input, !!errors.price && styles.inputError]}
-                  placeholder="Ex: 49,90"
+                  placeholder="R$ 0,00"
                   placeholderTextColor="#555"
                   value={value}
-                  onChangeText={onChange}
+                  onChangeText={(text) => onChange(formatCurrencyInput(text))}
                   onBlur={onBlur}
-                  keyboardType="decimal-pad"
+                  keyboardType="numeric"
                   returnKeyType="done"
                 />
                 {errors.price && (
@@ -154,7 +174,7 @@ export default function EditProductScreen() {
           <View style={styles.buttonRow}>
             <Pressable
               style={({ pressed }) => [styles.btnCancel, pressed && styles.btnCancelPressed]}
-              onPress={() => router.back()}
+              onPress={() => goBack(`/stores/${storeId}`)}
             >
               <Text style={styles.btnCancelText}>Cancelar</Text>
             </Pressable>
@@ -249,11 +269,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: '#2563EB',
     alignItems: 'center',
-    shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 6,
+    ...shadow('#2563EB', 4, 8, 0.4, 6),
   },
   btnSubmitPressed: {
     backgroundColor: '#1D4ED8',

@@ -6,9 +6,10 @@ interface RawProductResponse {
   id: string;
   storeId?: string;
   store_id?: string;
+  store?: { id?: string };
   name: string;
   category: string;
-  price: number | string;
+  price?: number | string | null;
   createdAt?: string;
   created_at?: string;
 }
@@ -18,12 +19,25 @@ interface RawProductResponse {
 export const productAdapter = {
   /** Converts raw API response → typed Product model */
   fromResponse(raw: RawProductResponse): Product {
+    // MirageJS belongsTo pode aninhar o id em raw.store.id
+    const storeId = raw.storeId ?? raw.store_id ?? raw.store?.id ?? '';
+
+    // Normaliza price: string com vírgula, undefined ou NaN → 0
+    let price = 0;
+    if (raw.price !== undefined && raw.price !== null) {
+      const normalized =
+        typeof raw.price === 'string'
+          ? parseFloat(raw.price.replace(',', '.'))
+          : Number(raw.price);
+      price = isNaN(normalized) ? 0 : normalized;
+    }
+
     return {
       id: raw.id,
-      storeId: raw.storeId ?? raw.store_id ?? '',
+      storeId,
       name: raw.name,
       category: raw.category as ProductCategory,
-      price: typeof raw.price === 'string' ? parseFloat(raw.price) : raw.price,
+      price,
       createdAt: raw.createdAt ?? raw.created_at ?? new Date().toISOString(),
     };
   },

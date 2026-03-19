@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Pressable, View, Text, StyleSheet } from 'react-native';
+import { Pressable, View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Store } from '@/src/types';
@@ -10,7 +10,6 @@ import {
   AlertDialogBody,
   AlertDialogFooter,
 } from './ui/alert-dialog';
-import { Button, ButtonText } from './ui/button';
 import { Heading } from './ui/heading';
 import { Text as GText } from './ui/text';
 
@@ -100,24 +99,22 @@ export function StoreCard({ store, onDelete }: StoreCardProps) {
             </GText>
           </AlertDialogBody>
           <AlertDialogFooter>
-            <Button
-              size="sm"
-              variant="outline"
-              action="default"
+            <Pressable
               onPress={() => setShowDeleteDialog(false)}
+              style={({ pressed }) => [styles.dialogBtn, styles.dialogBtnCancel, pressed && styles.dialogBtnCancelPressed]}
             >
-              <ButtonText action="default" variant="outline">
-                Cancelar
-              </ButtonText>
-            </Button>
-            <Button
-              size="sm"
-              action="negative"
+              <Text style={styles.dialogBtnCancelText}>Cancelar</Text>
+            </Pressable>
+            <Pressable
               onPress={handleDelete}
-              isLoading={deleting}
+              disabled={deleting}
+              style={({ pressed }) => [styles.dialogBtn, styles.dialogBtnDelete, pressed && styles.dialogBtnDeletePressed, deleting && { opacity: 0.6 }]}
             >
-              <ButtonText>Excluir</ButtonText>
-            </Button>
+              {deleting
+                ? <ActivityIndicator size="small" color="#fff" />
+                : <Text style={styles.dialogBtnDeleteText}>Excluir</Text>
+              }
+            </Pressable>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -204,5 +201,37 @@ const styles = StyleSheet.create({
   },
   actionBtnDangerPressed: {
     backgroundColor: 'rgba(239, 68, 68, 0.2)',
+  },
+  dialogBtn: {
+    height: 38,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 90,
+  },
+  dialogBtnCancel: {
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    backgroundColor: 'transparent',
+  },
+  dialogBtnCancelPressed: {
+    backgroundColor: '#F3F4F6',
+  },
+  dialogBtnCancelText: {
+    color: '#374151',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  dialogBtnDelete: {
+    backgroundColor: '#DC2626',
+  },
+  dialogBtnDeletePressed: {
+    backgroundColor: '#B91C1C',
+  },
+  dialogBtnDeleteText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
   },
 });
