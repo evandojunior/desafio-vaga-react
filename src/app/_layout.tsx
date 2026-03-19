@@ -16,7 +16,7 @@ import { Stack, useSegments, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { makeServer } from '@/src/services/mock/server';
 
-import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
+import { GluestackUIProvider } from '@/src/components/ui/gluestack-ui-provider';
 import '@/global.css';
 import { useAuthStore } from '@/src/store/useAuthStore';
 import { useAppStore } from '@/src/store';

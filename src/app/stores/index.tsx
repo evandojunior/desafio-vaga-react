@@ -4,13 +4,13 @@ import { shadow } from '@/src/utils/shadow';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useStores } from '@/src/hooks/useStores';
-import { StoreCard } from '@/components/StoreCard';
-import { SearchBar } from '@/components/SearchBar';
-import { EmptyState } from '@/components/EmptyState';
-import { Spinner } from '@/components/ui/spinner';
-import { Box } from '@/components/ui/box';
-import { VStack } from '@/components/ui/vstack';
-import { Text } from '@/components/ui/text';
+import { StoreCard } from '@/src/components/StoreCard';
+import { SearchBar } from '@/src/components/SearchBar';
+import { EmptyState } from '@/src/components/EmptyState';
+import { Spinner } from '@/src/components/ui/spinner';
+import { Box } from '@/src/components/ui/box';
+import { VStack } from '@/src/components/ui/vstack';
+import { Text } from '@/src/components/ui/text';
 
 export default function StoresScreen() {
   const [search, setSearch] = useState('');

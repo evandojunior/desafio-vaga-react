@@ -1,8 +1,8 @@
 import { Link, Stack } from 'expo-router';
-import { Box } from '@/components/ui/box';
-import { VStack } from '@/components/ui/vstack';
-import { Heading } from '@/components/ui/heading';
-import { Text } from '@/components/ui/text';
+import { Box } from '@/src/components/ui/box';
+import { VStack } from '@/src/components/ui/vstack';
+import { Heading } from '@/src/components/ui/heading';
+import { Text } from '@/src/components/ui/text';
 
 export default function NotFoundScreen() {
   return (

@@ -5,10 +5,10 @@ import { useLocalSearchParams, router, useNavigation } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useStore } from '@/src/hooks/useStores';
 import { useProducts } from '@/src/hooks/useProducts';
-import { ProductCard } from '@/components/ProductCard';
-import { SearchBar } from '@/components/SearchBar';
-import { EmptyState } from '@/components/EmptyState';
-import { Spinner } from '@/components/ui/spinner';
+import { ProductCard } from '@/src/components/ProductCard';
+import { SearchBar } from '@/src/components/SearchBar';
+import { EmptyState } from '@/src/components/EmptyState';
+import { Spinner } from '@/src/components/ui/spinner';
 
 export default function StoreDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

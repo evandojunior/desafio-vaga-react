@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import { StoreCard } from '../components/StoreCard';
+import { StoreCard } from '../src/components/StoreCard';
 import { Store } from '../src/types';
 
 // Mock expo-router
@@ -60,10 +60,10 @@ describe('StoreCard', () => {
     );
 
     fireEvent.press(getByText('trash-outline'));
-    
+
     // The dialog opens, wait for Excluir (confirm) button
     await waitFor(() => {
-        expect(getByText('Excluir')).toBeTruthy();
+      expect(getByText('Excluir')).toBeTruthy();
     });
     fireEvent.press(getByText('Excluir'));
 

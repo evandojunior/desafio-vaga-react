@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useStore } from '@/src/hooks/useStores';
 import { useAppStore } from '@/src/store';
-import { Spinner } from '@/components/ui/spinner';
+import { Spinner } from '@/src/components/ui/spinner';
 
 const schema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').max(100),

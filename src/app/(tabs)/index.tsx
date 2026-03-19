@@ -3,12 +3,12 @@ import { FlatList, Pressable, RefreshControl, StyleSheet, View, Text as RNText }
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useStores } from '@/src/hooks/useStores';
-import { StoreCard } from '@/components/StoreCard';
-import { SearchBar } from '@/components/SearchBar';
-import { EmptyState } from '@/components/EmptyState';
-import { Spinner } from '@/components/ui/spinner';
-import { Text } from '@/components/ui/text';
-import { Fab, FabLabel } from '@/components/ui/fab';
+import { StoreCard } from '@/src/components/StoreCard';
+import { SearchBar } from '@/src/components/SearchBar';
+import { EmptyState } from '@/src/components/EmptyState';
+import { Spinner } from '@/src/components/ui/spinner';
+import { Text } from '@/src/components/ui/text';
+import { Fab, FabLabel } from '@/src/components/ui/fab';
 
 export default function StoresScreen() {
   const [search, setSearch] = useState('');
@@ -76,7 +76,7 @@ export default function StoresScreen() {
         isPressed={false}
         onPress={() => router.push('/stores/new')}
       >
-        <Ionicons name="add" size={20}  className="mr-1" />
+        <Ionicons name="add" size={20} className="mr-1" />
         <FabLabel>Nova Loja</FabLabel>
       </Fab>
     </View>

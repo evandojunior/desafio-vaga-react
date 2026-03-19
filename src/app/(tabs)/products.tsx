@@ -12,10 +12,10 @@ import {
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppStore } from '@/src/store';
-import { ProductCard } from '@/components/ProductCard';
-import { SearchBar } from '@/components/SearchBar';
-import { EmptyState } from '@/components/EmptyState';
-import { Spinner } from '@/components/ui/spinner';
+import { ProductCard } from '@/src/components/ProductCard';
+import { SearchBar } from '@/src/components/SearchBar';
+import { EmptyState } from '@/src/components/EmptyState';
+import { Spinner } from '@/src/components/ui/spinner';
 import { Product } from '@/src/types';
 
 interface ProductWithStore extends Product {
