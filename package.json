@@ -1,5 +1,6 @@
 {
   "name": "desafio-vaga-react",
+  "homepage": "https://evandojunior.github.io/desafio-vaga-react",
   "version": "1.0.0",
   "main": "expo-router/entry",
   "scripts": {
