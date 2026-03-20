@@ -26,52 +26,49 @@ Aplicativo mobile multiplataforma para cadastro e gestão de lojas e produtos de
 
 ```
 desafio-vaga-react/
-├── 
-├──src/
 ├── app/
-│   ├── _layout.tsx             # Root layout + inicialização do MirageJS
-│   ├── index.tsx               # Redirect → /stores
-│   ├── stores/
-│   │   ├── index.tsx           # Lista de lojas
-│   │   ├── new.tsx             # Formulário de nova loja
-│   │   └── [id]/
-│   │       ├── index.tsx       # Detalhe da loja + lista de produtos
-│   │       ├── edit.tsx        # Editar loja
-│   │       └── products/
-│   │           ├── new.tsx     # Novo produto
-│   │           └── [productId]/
-│   │               └── edit.tsx  # Editar produto
-├── components/
-│   ├── ui/                     # Componentes Gluestack UI v2 (NativeWind)
-│   │   ├── box/
-│   │   ├── vstack/
-│   │   ├── hstack/
-│   │   ├── text/
-│   │   ├── heading/
-│   │   ├── button/
-│   │   ├── input/
-│   │   ├── form-control/
-│   │   ├── badge/
-│   │   ├── spinner/
-│   │   ├── card/
-│   │   ├── select/
-│   │   ├── pressable/
-│   │   └── alert-dialog/
-│   ├── StoreCard.tsx
-│   ├── ProductCard.tsx
-│   ├── SearchBar.tsx
-│   └── EmptyState.tsx
-│   ├── types/index.ts          # Tipos TypeScript (Store, Product, …)
-│   ├── services/
-│   │   ├── api.ts              # Cliente HTTP
-│   │   └── mock/server.ts      # MirageJS – endpoints simulados
-│   ├── store/index.ts          # Zustand – estado global
-│   └── hooks/
-│       ├── useStores.ts
-│       └── useProducts.ts
-└── __tests__/
-    ├── StoreCard.test.tsx
+│   ├── _layout.tsx             # Root layout + Providers
+│   ├── (auth)/                 # Fluxo de Autenticação
+│   │   ├── login.tsx
+│   │   └── register.tsx
+│   ├── (tabs)/                 # Navegação principal em Abas
+│   │   ├── _layout.tsx
+│   │   ├── index.tsx           # Tela inicial (Lojas)
+│   │   ├── products.tsx        # Lista global de produtos
+│   │   └── profile.tsx         # Perfil do usuário logado
+│   └── stores/
+│       ├── new.tsx             # Formulário de nova loja
+│       └── [id]/
+│           ├── index.tsx       # Detalhes da loja
+│           ├── edit.tsx        # Editar loja
+│           └── products/
+│               ├── new.tsx     # Novo produto da loja
+│               └── [productId]/
+│                   └── edit.tsx  # Editar produto
+├── src/
+│   ├── components/             # Componentes isolados com estilos
+│   │   ├── ui/                 # Componentes base
+│   │   ├── EmptyState/
+│   │   ├── ProductCard/
+│   │   ├── SearchBar/
+│   │   └── StoreCard/
+│   ├── hooks/                  # Custom Hooks (useStores, useProducts)
+│   ├── mock/                   # Servidor MirageJS
+│   │   └── server.ts
+│   ├── repositories/           # Repositórios de dados e Auth
+│   │   ├── AuthRepository.ts
+│   │   ├── ProductRepository.ts
+│   │   └── StoreRepository.ts
+│   ├── store/                  # Estado global Zustand
+│   │   └── index.ts
+│   └── types/                  # Tipagens TypeScript globais
+│       └── index.ts
+└── __tests__/                  # Suíte de Testes (Unitários e Componentes)
+    ├── login.test.tsx
+    ├── register.test.tsx
     ├── store.test.ts
+    ├── StoreCard.test.tsx
+    ├── StoresScreen.test.tsx
     └── useStores.test.ts
 ```
 
@@ -124,13 +121,10 @@ O comando `adb reverse` cria um túnel entre o emulador e o WSL2.
 ### Passo a passo (somente WSL2)
 
 ```bash
-# 1. Com o emulador Android já aberto, rode no terminal WSL2:
-adb reverse tcp:8081 tcp:8081
+# 1. Com o emulador Android já aberto no Windows, rode o script utilitário do WSL2:
+npm run start-wsl
 
-# 2. Inicie o Metro normalmente
-npx expo start
-
-# 3. No menu do Expo, pressione 'a' para abrir no emulador
+# 2. No menu do Expo, pressione 'a' para abrir no emulador Android
 ```
 
 > Se o Expo Go mostrar erro de conexão, force-feche o app no emulador e tente novamente.
@@ -166,11 +160,13 @@ O banco é populado com **3 lojas** e **8 produtos** de seed ao iniciar.
 npm test
 ```
 
-Os testes utilizam **Jest** + **@testing-library/react-native** e cobrem:
+Os testes utilizam **Jest** + **@testing-library/react-native** (40 testes passando) e cobrem:
 
-- Renderização e interações do `StoreCard`
-- Actions do Zustand store (fetch, create, delete)
-- Hook `useStores` — filtragem por busca
+- Telas de Autenticação (Fluxos virtuais de Login e Registro com router mockado)
+- Renderização, Interações e Modais de Confirmação (`StoreCard`, `ProductCard`)
+- Telas completas, loading states e listas independentes (`StoresScreen`)
+- Hooks customizados (`useStores`)
+- Actions e mutações do Zustand store (fetch, create, delete com strict mock data)
 
 ---
 
@@ -192,19 +188,20 @@ Formulários com validação client-side robusta e mensagens de erro em portugu�
 
 ## Funcionalidades implementadas
 
-- [x] Listagem de lojas com contador de produtos
+- [x] **Arquitetura modular:** componentes isolados por negócio (`src/components/Modulo`) com index + styles
+- [x] **Fluxo de Autenticação:** Login, Registro e Header de boas-vindas com persistência
+- [x] **Restrições de Formulários:** Input Sanitization global em campos textuais/multilines limitando maxLength
 - [x] Cadastro de nova loja (nome + endereço obrigatório)
 - [x] Edição de loja
-- [x] Exclusão de loja (com diálogo de confirmação + cascata nos produtos)
-- [x] Listagem de produtos por loja
-- [x] Cadastro de produto (nome, categoria, preço)
-- [x] Edição de produto
-- [x] Exclusão de produto
+- [x] Exclusão de loja (com diálogo de confirmação assíncrono + cascata nos produtos)
+- [x] Listagem de produtos por loja e Aba global de produtos mistos
+- [x] Modais de filtro por Categorias
+- [x] Integração sólida das Categorias de Produto via backend API MirageJS
 - [x] Busca/filtro de lojas por nome e endereço
-- [x] Busca/filtro de produtos por nome e categoria
-- [x] Pull-to-refresh
-- [x] Estados de loading e erro
-- [x] Estado vazio com mensagem contextual
-- [x] Testes unitários (Jest + RNTL)
-- [x] TypeScript estrito
-- [x] ESLint + Prettier configurados
+- [x] Busca/filtro de produtos dinamicamente 
+- [x] Estados de loading com Spinners e skeletons nativos
+- [x] Empty state contextual
+- [x] **+40 Testes Automatizados** Unitários e de Componente (Jest + RNTL 100% no verde)
+- [x] Padrão de Injeção de Dependência através da camada `/repositories`
+- [x] TypeScript estritamente tipado em todos os contratos de entidade
+- [x] Formatação ESLint + Prettier rigorosos
