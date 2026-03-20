@@ -26,7 +26,9 @@ Aplicativo mobile multiplataforma para cadastro e gestão de lojas e produtos de
 
 ```
 desafio-vaga-react/
-├── app/                        # Expo Router (file-based routing)
+├── 
+├──src/
+├── app/
 │   ├── _layout.tsx             # Root layout + inicialização do MirageJS
 │   ├── index.tsx               # Redirect → /stores
 │   ├── stores/
@@ -59,7 +61,6 @@ desafio-vaga-react/
 │   ├── ProductCard.tsx
 │   ├── SearchBar.tsx
 │   └── EmptyState.tsx
-├── src/
 │   ├── types/index.ts          # Tipos TypeScript (Store, Product, …)
 │   ├── services/
 │   │   ├── api.ts              # Cliente HTTP
