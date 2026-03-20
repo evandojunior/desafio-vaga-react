@@ -185,6 +185,38 @@ Navegação baseada em arquivos com suporte a deep links, TypeScript e layouts a
 Formulários com validação client-side robusta e mensagens de erro em português.
 
 ---
+## PRINTS DO PROJETO
+
+### Lojas
+
+#### Listagem de Lojas - Sem Lojas
+<img width="410" height="935" alt="image" src="https://github.com/user-attachments/assets/f71c496e-2d02-4607-b6cc-1482fe400dcd" />
+
+#### Listagem de Lojas
+<img width="422" height="978" alt="image" src="https://github.com/user-attachments/assets/7e38351c-c5b5-45e7-a050-8ec9df818d35" />
+
+#### Cadastro de Loja
+<img width="431" height="981" alt="image" src="https://github.com/user-attachments/assets/29f9f9f5-a8ca-4aaa-b6f6-ca8ce71a02c9" />
+
+#### Listagem de Produtos - Sem Produtos
+<img width="415" height="967" alt="image" src="https://github.com/user-attachments/assets/e7ef481c-2cbc-4911-8c85-339187347400" />
+
+#### Cadastro de Produtos
+<img width="418" height="952" alt="image" src="https://github.com/user-attachments/assets/fde98dca-f747-4331-a4d7-e16e28024988" 
+
+#### Listagem de Produtos
+<img width="428" height="942" alt="image" src="https://github.com/user-attachments/assets/bf16bdd8-ea7d-46c5-9758-99b6adfa3897" />
+
+#### Sobre
+
+<img width="424" height="958" alt="image" src="https://github.com/user-attachments/assets/67da025b-817a-4f9a-aa32-6ceeb334a09f" />
+
+
+
+
+
+
+---
 
 ## Funcionalidades implementadas
 
