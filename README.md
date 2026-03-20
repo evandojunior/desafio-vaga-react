@@ -202,7 +202,7 @@ Formulários com validação client-side robusta e mensagens de erro em portugu�
 <img width="415" height="967" alt="image" src="https://github.com/user-attachments/assets/e7ef481c-2cbc-4911-8c85-339187347400" />
 
 #### Cadastro de Produtos
-<img width="418" height="952" alt="image" src="https://github.com/user-attachments/assets/fde98dca-f747-4331-a4d7-e16e28024988" 
+<img width="418" height="952" alt="image" src="https://github.com/user-attachments/assets/fde98dca-f747-4331-a4d7-e16e28024988" />  
 
 #### Listagem de Produtos
 <img width="428" height="942" alt="image" src="https://github.com/user-attachments/assets/bf16bdd8-ea7d-46c5-9758-99b6adfa3897" />
