@@ -2,6 +2,15 @@
 
 Aplicativo mobile multiplataforma para cadastro e gestão de lojas e produtos de uma rede de varejo.
 
+### 🌐 [Ver Demonstração Web →](https://evandojunior.github.io/desafio-vaga-react)
+
+![Deploy Status](https://img.shields.io/github/actions/workflow/status/evandojunior/desafio-vaga-react/deploy.yml?label=CI%2FCD&logo=github-actions&style=for-the-badge)
+![Jest Tests](https://img.shields.io/badge/Tests-40_Passed-brightgreen?style=for-the-badge&logo=jest)
+![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Expo](https://img.shields.io/badge/Expo-1C1E24?style=for-the-badge&logo=expo&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Zustand](https://img.shields.io/badge/Zustand-443E38?style=for-the-badge)
+
 ---
 
 ## Versões utilizadas
